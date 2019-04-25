@@ -1,9 +1,7 @@
 /*---------- Query Selectors -----------*/
 /*---------- Input Var.      -----------*/
-
-
-var inputGuessCh1 = document.querySelector('#input-guess-challenger1');
-var inputGuessCh2 = document.querySelector('#input-guess-challenger2');
+var $inputGuessCh1 = $('#input-guess-challenger1');
+var $inputGuessCh2 = $('#input-guess-challenger2');
 var inputAll = document.querySelectorAll('input');
 /*--------- Output Var -----------------*/
 var outputRangeMin = document.querySelector('#range-min');
@@ -49,25 +47,13 @@ var $inputNameCh1 = $('#input-name-challenger1');
 var $inputNameCh2 = $('#input-name-challenger2');
 
 /*--------- jQuery Listeners ----------*/
-$btnUpdateRange.on('click', e => {
-  validateInputRange(e)
-})
-
-$btnSubmit.on('click', e => {
-  minMaxGuessValidation(e)
-})
-
-$btnClear.on('click', e => {
-  resetChallengerForm(e)
-})
-
-$btnReset.on('click', e => {
-  resetGame(e)
-})
-
-$asideColumn.on('click', e => {
-  deleteCard(e)
-});
+$btnUpdateRange.on('click', e => validateInputRange(e))
+$btnSubmit.on('click', e => minMaxGuessValidation(e))
+$btnClear.on('click', e => resetChallengerForm(e))
+$btnReset.on('click', e => resetGame(e))
+$asideColumn.on('click', e => deleteCard(e));
+$inputGuessCh1.on('input', e => validateChallenger1(e));
+$inputGuessCh2.on('input', e => validateChallenger2(e))
 
 var btnHideCard = document.querySelector('.fa-times-circle');
 
@@ -76,7 +62,6 @@ $inputRangeMin.on('input', e => {
   toggleDisabledBtnUpdate(e)
   validateRange(e)
 });
-
 
 $inputRangeMax.on('input', e => {
   toggleDisabledBtnUpdate(e)
@@ -90,17 +75,6 @@ $inputNameCh1.on('input', e =>{
 $inputNameCh2.on('input', e => {
   validateChallenger2(e)
 });
-
-/*---------- Input Guesses -------------*/
-inputGuessCh1.addEventListener('input', validateCh1Guess);
-inputGuessCh1.addEventListener('keyup', toggleDisabledBtnSubmit);
-inputGuessCh1.addEventListener('keyup', toggleDisabledClear);
-inputGuessCh1.addEventListener('keydown', validateRange);
-
-inputGuessCh2.addEventListener('input', validateCh2Guess);
-inputGuessCh2.addEventListener('keyup', toggleDisabledBtnSubmit);
-inputGuessCh2.addEventListener('keyup', toggleDisabledClear);
-inputGuessCh2.addEventListener('keydown', validateRange);
 
 /*---------- Global Variables ----------*/
 var outputWinner;
@@ -116,11 +90,9 @@ $(document).ready(() => {
   startClock()
 })
 
-
-
 function makeRandomNumber() {
     if($minNumber<=0){
-    minNumber = 1;
+    $minNumber = 1;
   }
   randomNum = Math.floor(Math.random() * ($maxNumber - $minNumber + 1)) + $minNumber;
   console.log(randomNum);
@@ -134,7 +106,7 @@ function toggleDisabledBtnUpdate() {
 };
 
 function toggleDisabledBtnSubmit() {
-   if (inputGuessCh1.value && inputGuessCh2.value && $inputNameCh1.val() && $inputNameCh2.val() !='') {
+   if ($inputGuessCh1.val() && $inputGuessCh2.val() && $inputNameCh1.val() && $inputNameCh2.val() !='') {
     $btnSubmit.removeAttr('disabled');
   } else {
     $btnSubmit.attr('disabled', 'disabled');
@@ -142,15 +114,14 @@ function toggleDisabledBtnSubmit() {
   }
 };
 
-
 function toggleDisabledClear() {
   if ($inputNameCh1.val() !='' || $inputNameCh2.val() != '') {
     $btnClear.removeAttr('disabled');
   }
-  if(inputGuessCh1 != '' || inputGuessCh2.value != '') {
+  if($inputGuessCh1.val() != '' || $inputGuessCh2.val() != '') {
     $btnClear.removeAttr('disabled');
   }
-  if (inputGuessCh1 == ''|| inputGuessCh2 =='') {
+  if ($inputGuessCh1.val() == ''|| $inputGuessCh2.val() =='') {
     $btnClear.attr('disabled', 'disabled');
   }
 };
@@ -205,29 +176,42 @@ function validateCh2Name(){
   }
 }
 
-function validateCh1Guess(){
-  if(inputGuessCh1.value == '') {
-    inputGuessCh1.classList.add('error');
-    errorGuess1.style.display= 'block';
+function validateChallenger1Guess(e){
+  toggleDisabledBtnSubmit()
+  toggleDisabledClear()
+  // validateRange(e)
+  errorCheckCh1Guess()
+};
+
+function errorCheckCh1Guess(){
+  if ($inputGuessCh1.value == '') {
+    $inputGuessCh1.addClass('error');
+    errorGuess1.style.display = 'block';
   } else {
-    inputGuessCh1.classList.remove('error');
+    $inputGuessCh1.removeClass('error');
     errorGuess1.style.display = 'none';
   } 
+}
+
+function validateChallenger2Guess(e) {
+  toggleDisabledBtnSubmit()
+  toggleDisabledClear()
+  // validateRange(e)
+  errorCheckCh2Guess()
 };
 
-function validateCh2Guess() {
-  if(inputGuessCh2.value == '') {
-    inputGuessCh2.classList.add('error');
+function errorCheckCh2Guess() {
+  if ($inputGuessCh2.val() == '') {
+    $inputGuessCh2.addClass('error');
     errorGuess2.style.display = 'block';
   } else {
-    inputGuessCh2.classList.remove('error');
+    $inputGuessCh2.removeClass('error');
     errorGuess2.style.display = 'none';
   }
-};
-
+}
 function validateAllInputs() {
-  validateCh1Guess();
-  validateCh2Guess();
+  validateChallenger1Guess();
+  validateChallenger2Guess();
   validateCh1Name();
   validateCh2Name();
 };
@@ -260,28 +244,28 @@ function removeRangeError() {
 }
 
 function updateRange() {
-  minNumber = parseInt($inputRangeMin.val()) || 1;
-  maxNumber = parseInt($inputRangeMax.val()) || 100;
+  $minNumber = parseInt($inputRangeMin.val()) || 1;
+  $maxNumber = parseInt($inputRangeMax.val()) || 100;
   makeRandomNumber();
   changeDOMRange();
   formUpdateRange.reset();
 };
 
 function changeDOMRange() {
-  outputRangeMin.innerText = minNumber;
-  outputRangeMax.innerText = maxNumber;
+  outputRangeMin.innerText = $minNumber;
+  outputRangeMax.innerText = $maxNumber;
 };
 
 function checkGuess(inputGuess) {
   let outputHighLow = outputHighLow1;
   let inputName = $inputNameCh1;
-  if(inputGuess.id === inputGuessCh2.id){
+  if(inputGuess.id === $inputGuessCh2.id){
     outputHighLow = outputHighLow2;
     inputName = $inputNameCh2;
   } 
-  if(inputGuess.value == randomNum) { 
+  if(inputGuess.val() == randomNum) { 
     winner(outputHighLow, inputName)
-  } else if (inputGuess.value < randomNum) {
+  } else if (inputGuess.val() < randomNum) {
     tooLow(outputHighLow)
   } else { 
     tooHigh(outputHighLow);
@@ -299,7 +283,7 @@ function tooHigh(outputHighLow) {
 };
 
 function winner(outputHighLow, inputName) {
-  outputWinner = inputName.value;
+  outputWinner = inputName.val();
   outputHighLow.innerText = 'BOOM';
   increaseDifficulty();
   appendCard();
@@ -311,27 +295,27 @@ function winner(outputHighLow, inputName) {
 function resetChallengerForm(e){
   e.preventDefault();
   formChallenger.reset();
-  btnClear.setAttribute ('disabled','disabled') 
+  $btnClear.attr('disabled','disabled') 
 };
 
 function resetGame (e){
   e.preventDefault()
   formChallenger.reset()
-  minNumber = 1;
-  maxNumber = 100;
+  $minNumber = 1;
+  $maxNumber = 100;
   changeDOMRange();
   makeRandomNumber()
   displayNames() 
   $btnReset.attr('disabled','disabled')
   $btnClear.attr('disabled','disabled')
-  $$btnSubmit.attr('disabled','disabled')
+  $btnSubmit.attr('disabled','disabled')
 }
 
 function minMaxGuessValidation(e){
   e.preventDefault()
-  if(inputGuessCh1.value > $maxNumber || inputGuessCh1.value < $minNumber) {
+  if($inputGuessCh1.val() > $maxNumber || $inputGuessCh1.val() < $minNumber) {
     addGuessErrors()
-  } else if(inputGuessCh1.value < $minNumber || inputGuessCh2.value < $minNumber){
+  } else if($inputGuessCh1.val() < $minNumber || $inputGuessCh2.val() < $minNumber){
     addGuessErrors()
   }else{
     removeGuessErrors();
@@ -340,10 +324,10 @@ function minMaxGuessValidation(e){
 }
 
 function addGuessErrors(){
-  inputGuessCh1.classList.add('error');
-  inputGuessCh2.classList.add('error');
-  $inputNameCh1.addCLass('error');
-  inputNameCh2.classList.add('error');
+  $inputGuessCh1.addClass('error');
+  $inputGuessCh2.addClass('error');
+  $inputNameCh1.addClass('error');
+  $inputNameCh2.addClass('error');
   errorGuess1.style.display = 'block';
   errorGuess2.style.display = 'block';
   errorName1.style.display = 'block';
@@ -351,8 +335,8 @@ function addGuessErrors(){
 }
 
 function removeGuessErrors(){
-  inputGuessCh1.classList.remove('error');
-  inputGuessCh2.classList.remove('error');
+  $inputGuessCh1.removeClass('error');
+  $inputGuessCh2.removeClass('error');
   $inputNameCh1.addClass('error');
   $inputNameCh2.removeClass('error');
   errorGuess1.style.display = 'none';
@@ -364,19 +348,20 @@ function removeGuessErrors(){
 
 function playGame() {
   displayNames();
-  checkGuess(inputGuessCh1);
-  checkGuess(inputGuessCh2);
+  checkGuess($inputGuessCh1);
+  checkGuess($inputGuessCh2);
   validateAllInputs();
 } 
 
 function displayNames(){
   outputNameCh1.innerText = $inputNameCh1.val() || 'Challenger 1 Name';
-  outputGuessCh1.innerText = inputGuessCh1.value || '--';
+  outputGuessCh1.innerText = $inputGuessCh1.val() || '--';
   outputNameCh2.innerText = $inputNameCh2.val() || 'Challenger 2 Name';
-  outputGuessCh2.innerText = inputGuessCh2.value || '--';
+  outputGuessCh2.innerText = $inputGuessCh2.val() || '--';
 }
 
 function appendCard(){
+  debugger;
   let newWinner = $(`<section class="card-winner">
       <div class="versus-challenger">
         <p class="card-output-ch1">${$inputNameCh1.val() || `Challenger 1`}</p>
@@ -426,6 +411,3 @@ function deleteCard(e){
 function startClock(){
   setInterval(()=>timer++, 1000)
 }
-
-// window.onload = makeRandomNumber();
-// window.onload = startClock();
