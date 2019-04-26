@@ -32,10 +32,9 @@ $btnSubmit.on('click', e => minMaxGuessValidation(e))
 $btnClear.on('click', e => resetChallengerForm(e))
 $btnReset.on('click', e => resetGame(e))
 $asideColumn.on('click', e => deleteCard(e));
-$inputGuessCh1.on('input', () => validateChallenger1());
-$inputGuessCh2.on('input', () => validateChallenger2())
 $inputNameCh1.on('input', () => validateChallenger1());
 $inputNameCh2.on('input', () => validateChallenger2());
+$('#form-challenger input').on('input', () => toggleGameButtons() )
 $('.input-num').on('keydown', e => validateRange(e))
 $('.guesses-challenger').on('keydown', e => validateForAlphaNumeric(e))
 
@@ -69,30 +68,26 @@ function makeRandomNumber() {
   }
   randomNum = Math.floor(Math.random() * ($maxNumber - $minNumber + 1)) + $minNumber;
   console.log(randomNum);
-  
 };
 
-function validateChallenger1() {
+function toggleGameButtons() {
   toggleDisabledClear()
   toggleDisabledBtnSubmit()
+}
+
+function validateChallenger1() {
   validateCh1Name()
 };
 
 function validateChallenger2() {
-  toggleDisabledClear()
-  toggleDisabledBtnSubmit()
   validateCh2Name()
 };
 
 function validateChallenger1Guess(){
-  toggleDisabledBtnSubmit()
-  toggleDisabledClear()
   errorCheckCh1Guess()
 };
 
 function validateChallenger2Guess() {
-  toggleDisabledBtnSubmit()
-  toggleDisabledClear()
   errorCheckCh2Guess()
 };
 
@@ -130,8 +125,8 @@ function toggleDisabledClear() {
 };
 
 function validateRange(e) {
-  var regexCharNum = /[\d\t\r]/;
-  if (e.key === 'Backspace' || regexCharNum.test(e.key)) {
+  var regexCharNum = /([\t\r\n\d])/g;
+  if (regexCharNum.test(e.key) || e.key === 'Backspace') {
   } else {
     e.preventDefault();
   }
@@ -338,7 +333,7 @@ function appendCard(){
         <p><span class="card-min">${timer}</span> seconds</p>
         <i class="fas fa-times-circle delete"></i>
       </div>
-    </section>`)
+    </section>`).slideDown()
   $asideColumn.prepend(newWinner)
   makeRandomNumber();
   resetTimer();
@@ -361,9 +356,9 @@ function increaseDifficulty(){
   }
 }
 
-function deleteCard(e){
-  if (e.target.classList.contains('delete')){
-    e.target.closest('section').remove();
+function deleteCard(event){
+  if ($(event.currentTarget).contains('delete')){
+    $(event.currentTarget).closest('section').slideUp();
   }
 }
 
