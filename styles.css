@@ -5,28 +5,38 @@
 
 body{
   display: grid;
-  grid-template-rows: 100px auto 200px;
-  background-color: darkslategray;
+  grid-template-rows: auto 500 100%;
+  background-color:  rgb(180, 180, 180);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .flex{
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  max-width: 1000px;
-  margin: auto;
 }
-
+h1,
+h2,
+h3{
+  text-align: center;
+  margin: 20px;
+}
 /*---------- Header ----------------*/
 header{
- background-color: aqua;
+ background-color: rgb(100, 100, 100);
  grid-row: 1;
+ color: azure;
 }
 
 /*---------- Aritcle ---------------*/
 article{
   grid-row: 2;
-  background-color: cornflowerblue;
+  background-color: rgb(180, 180, 180);
+  max-width: 1200px;
+  margin: auto;
+}
+
+article.flex{
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 img{
@@ -34,20 +44,15 @@ img{
   margin: auto;
 }
 
-section{
- width: 240px;
- padding: 20px; 
- margin: auto;
+section.flex{
+  max-width: 240px;
+  padding: 20px; 
+  margin: auto;
+  flex-direction: column;
+  
 }
-
-h2{
-  text-align: center;
-}
-
-/*---------- Footer ----------------*/
-footer{
-background-color: darkslategrey;
-grid-row: auto;
+section.flex:after{
+  align-content: space-between;
 }
 
 /*---------- Media Queries ---------*/
