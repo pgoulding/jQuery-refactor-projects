@@ -287,20 +287,15 @@ function resetGame (e){
 function minMaxGuessValidation(e){
   e.preventDefault()
   if($inputGuessCh1.val() > $maxNumber || $inputGuessCh1.val() < $minNumber){
-    addGuessErrors()
+    $inputGuessCh1.addClass('error');
+    $('#guess-error-1').slideDown();
   } else if($inputGuessCh2.val() > $maxNumber || $inputGuessCh2.val() < $minNumber){
-    addGuessErrors()
+    $inputGuessCh2.addClass('error');
+    $('#guess-error-2').slideDown();
   }else{
     removeGuessErrors();
     playGame()
   }
-}
-
-function addGuessErrors(){
-  $inputGuessCh1.addClass('error');
-  $inputGuessCh2.addClass('error');
-  $('#guess-error-1').slideDown();
-  $('#guess-error-2').slideDown();
 }
 
 function removeGuessErrors(){
