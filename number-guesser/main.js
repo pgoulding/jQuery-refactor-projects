@@ -1,87 +1,60 @@
 /*---------- Query Selectors -----------*/
-/*---------- Input Var.      -----------*/
-var $inputGuessCh1 = $('#input-guess-challenger1');
-var $inputGuessCh2 = $('#input-guess-challenger2');
-var inputAll = document.querySelectorAll('input');
-/*--------- Output Var -----------------*/
 var outputRangeMin = document.querySelector('#range-min');
 var outputRangeMax = document.querySelector('#range-max');
-
 var outputNameCh1 = document.querySelector('#name-output-challenger1');
 var outputNameCh2 = document.querySelector('#name-output-challenger2');
-
 var outputGuessCh1 = document.querySelector('#guess-output-challenger1');
 var outputGuessCh2 = document.querySelector('#guess-output-challenger2');
-
 var outputHighLow1 = document.querySelector('#guess-output-high-low1');
 var outputHighLow2 = document.querySelector('#guess-output-high-low2');
-/*--------- Buttons --------------------*/
-
-/*---------- HTML Elements -------------*/
 
 var formUpdateRange = document.querySelector('#form-range');
 var formChallenger = document.querySelector('#form-challenger');
-var winnerCard =  document.querySelector('section');
-
-var error = document.querySelector('.hidden-error');
-var errorName1 = document.querySelector('#name-error-1');
-var errorName2 = document.querySelector('#name-error-2'); 
-var errorGuess1 = document.querySelector('#guess-error-1');
-var errorGuess2 = document.querySelector('#guess-error-2');
-var errorInputMin = document.querySelector('#range-error-min');
-var errorInputMax = document.querySelector('#range-error-max');
-
-/*---------- Event Listeners -----------*/
 
 /*---------- jQuery Selectors ----------*/
-
 const $btnUpdateRange = $('#btn-update');
 const $btnSubmit = $('#btn-submit')
 const $btnClear = $('#btn-clear') 
 const $btnReset = $('#btn-reset')
 const $asideColumn = $('aside')
-var $inputRangeMin = $('#input-minrange');
-var $inputRangeMax = $('#input-maxrange');
+const $error = $('.hidden-error');
+let $inputGuessCh1 = $('#input-guess-challenger1');
+let $inputGuessCh2 = $('#input-guess-challenger2');
+let $inputRangeMin = $('#input-minrange');
+let $inputRangeMax = $('#input-maxrange');
+let $inputNameCh1 = $('#input-name-challenger1');
+let $inputNameCh2 = $('#input-name-challenger2');
 
-var $inputNameCh1 = $('#input-name-challenger1');
-var $inputNameCh2 = $('#input-name-challenger2');
-
+const $errorInputMax = $('#range-error-max');
 /*--------- jQuery Listeners ----------*/
 $btnUpdateRange.on('click', e => validateInputRange(e))
 $btnSubmit.on('click', e => minMaxGuessValidation(e))
 $btnClear.on('click', e => resetChallengerForm(e))
 $btnReset.on('click', e => resetGame(e))
 $asideColumn.on('click', e => deleteCard(e));
-$inputGuessCh1.on('input', e => validateChallenger1(e));
-$inputGuessCh2.on('input', e => validateChallenger2(e))
+$inputGuessCh1.on('input', () => validateChallenger1());
+$inputGuessCh2.on('input', () => validateChallenger2())
+$inputNameCh1.on('input', () => validateChallenger1());
+$inputNameCh2.on('input', () => validateChallenger2());
+$('.input-num').on('keydown', e => validateRange(e))
+$('.guesses-challenger').on('keydown', e => validateForAlphaNumeric(e))
 
-var btnHideCard = document.querySelector('.fa-times-circle');
-
-/*---------- Input Names ---------------*/
-$inputRangeMin.on('input', e => {
+$inputRangeMin.on('keydown', e => {
   toggleDisabledBtnUpdate(e)
   validateRange(e)
 });
 
-$inputRangeMax.on('input', e => {
+$inputRangeMax.on('keydown', e => {
   toggleDisabledBtnUpdate(e)
   validateRange(e)
-});
-
-$inputNameCh1.on('input', e =>{
-  validateChallenger1(e)
-});
-
-$inputNameCh2.on('input', e => {
-  validateChallenger2(e)
 });
 
 /*---------- Global Variables ----------*/
-var outputWinner;
-let $minNumber = parseInt($inputRangeMin.val()) || 1;
-let $maxNumber = parseInt($inputRangeMax.val()) || 100;
+let outputWinner = '';
 let timer = 0;
-var guessCounter = 1;
+let guessCounter = 1;
+let $minNumber = parseInt($inputRangeMin.val() || 1);
+let $maxNumber = parseInt($inputRangeMax.val() || 100);
 
 /*---------- Functions -----------------*/
 
@@ -96,39 +69,69 @@ function makeRandomNumber() {
   }
   randomNum = Math.floor(Math.random() * ($maxNumber - $minNumber + 1)) + $minNumber;
   console.log(randomNum);
+  
 };
 
+function validateChallenger1() {
+  toggleDisabledClear()
+  toggleDisabledBtnSubmit()
+  validateCh1Name()
+};
+
+function validateChallenger2() {
+  toggleDisabledClear()
+  toggleDisabledBtnSubmit()
+  validateCh2Name()
+};
+
+function validateChallenger1Guess(){
+  toggleDisabledBtnSubmit()
+  toggleDisabledClear()
+  errorCheckCh1Guess()
+};
+
+function validateChallenger2Guess() {
+  toggleDisabledBtnSubmit()
+  toggleDisabledClear()
+  errorCheckCh2Guess()
+};
+
+function validateAllInputs() {
+  validateChallenger1Guess();
+  validateChallenger2Guess();
+  validateCh1Name();
+  validateCh2Name();
+};
 
 function toggleDisabledBtnUpdate() {
-   if ($inputRangeMin.val() && $inputRangeMax.val() == '') {
+  if ($inputRangeMin.val() && $inputRangeMax.val() == '') {
     $btnUpdateRange.attr('disabled')
-   }
+  }
 };
 
 function toggleDisabledBtnSubmit() {
-   if ($inputGuessCh1.val() && $inputGuessCh2.val() && $inputNameCh1.val() && $inputNameCh2.val() !='') {
+  if ($inputGuessCh1.val() && $inputGuessCh2.val() && $inputNameCh1.val() && $inputNameCh2.val() != '') {
     $btnSubmit.removeAttr('disabled');
   } else {
     $btnSubmit.attr('disabled', 'disabled');
-
   }
 };
 
 function toggleDisabledClear() {
-  if ($inputNameCh1.val() !='' || $inputNameCh2.val() != '') {
+  if ($inputNameCh1.val() != '' || $inputNameCh2.val() != '') {
     $btnClear.removeAttr('disabled');
   }
-  if($inputGuessCh1.val() != '' || $inputGuessCh2.val() != '') {
+  if ($inputGuessCh1.val() != '' || $inputGuessCh2.val() != '') {
     $btnClear.removeAttr('disabled');
   }
-  if ($inputGuessCh1.val() == ''|| $inputGuessCh2.val() =='') {
+  if ($inputGuessCh1.val() == '' || $inputGuessCh2.val() == '') {
     $btnClear.attr('disabled', 'disabled');
   }
 };
 
 function validateRange(e) {
   var regexCharNum = /[\d\t\r]/;
-  if (e.key === 'Backspace' || regexCharNum.test(e.key)){
+  if (e.key === 'Backspace' || regexCharNum.test(e.key)) {
   } else {
     e.preventDefault();
   }
@@ -136,85 +139,55 @@ function validateRange(e) {
 
 function validateForAlphaNumeric(e) {
   var regexChar = /[\w\t\n\r]/;
-  if (e.key === 'Backspace' || regexChar.test(e.key)){
+  if (e.key === 'Backspace' || regexChar.test(e.key)) {
   } else {
     e.preventDefault();
   }
 };
 
-function validateChallenger1(e) {
-  toggleDisabledClear()
-  toggleDisabledBtnSubmit()
-  validateForAlphaNumeric(e)
-  validateCh1Name()
-};
-
-function validateCh1Name(){
+function validateCh1Name() {
+  let $errorName1 = $('#name-error-1');
   if ($inputNameCh1.val() == '') {
     $inputNameCh1.addClass('error')
-    errorName1.style.display = 'block';
+    $errorName1.slideDown()
   } else {
-  $inputNameCh1.removeClass('error');
-    errorName1.style.display = 'none';
+    $inputNameCh1.removeClass('error');
+    $errorName1.slideUp()
   }
 }
 
-function validateChallenger2(e) {
-  toggleDisabledClear()
-  toggleDisabledBtnSubmit()
-  validateForAlphaNumeric(e)
-  validateCh2Name()
-};
-
-function validateCh2Name(){
+function validateCh2Name() {
+  let $errorName2 = $('#name-error-2');
   if ($inputNameCh2.val() == '') {
     $inputNameCh2.addClass('error');
-    errorName2.style.display = 'block';
+    $errorName2.slideDown()
   } else {
     $inputNameCh2.removeClass('error');
-    errorName2.style.display = 'none';
+    $errorName2.slideUp()
   }
 }
 
-function validateChallenger1Guess(e){
-  toggleDisabledBtnSubmit()
-  toggleDisabledClear()
-  // validateRange(e)
-  errorCheckCh1Guess()
-};
-
 function errorCheckCh1Guess(){
+  let $errorGuess1 = $('#guess-error-1');
   if ($inputGuessCh1.value == '') {
     $inputGuessCh1.addClass('error');
-    errorGuess1.style.display = 'block';
+    $errorGuess1.slideDown()
   } else {
     $inputGuessCh1.removeClass('error');
-    errorGuess1.style.display = 'none';
+    $errorGuess1.slideUp()
   } 
 }
 
-function validateChallenger2Guess(e) {
-  toggleDisabledBtnSubmit()
-  toggleDisabledClear()
-  // validateRange(e)
-  errorCheckCh2Guess()
-};
-
 function errorCheckCh2Guess() {
+  let $errorGuess2 = $('#guess-error-2');
   if ($inputGuessCh2.val() == '') {
     $inputGuessCh2.addClass('error');
-    errorGuess2.style.display = 'block';
+    $errorGuess2.slideDown();
   } else {
     $inputGuessCh2.removeClass('error');
-    errorGuess2.style.display = 'none';
+    $errorGuess2.slideUp();
   }
 }
-function validateAllInputs() {
-  validateChallenger1Guess();
-  validateChallenger2Guess();
-  validateCh1Name();
-  validateCh2Name();
-};
 
 function validateInputRange(e) {
   e.preventDefault();
@@ -228,18 +201,18 @@ function validateInputRange(e) {
 };
 
 function addRangeError() {
+  $('#range-error-min').slideDown()
+  $('#range-error-max').slideDown()
   $inputRangeMin.addClass('error');
   $inputRangeMax.addClass('error');
-  errorInputMin.style.display = 'block';
-  errorInputMax.style.display = 'block';
   $btnUpdateRange.css('align-self', 'center');
 };
 
 function removeRangeError() {
-  $inputRangeMax.removeClass('error');
-  errorInputMax.style.display = 'none';
-  $inputRangeMin.removeClass('error');
-  errorInputMin.style.display = 'none';
+  $('#range-error-min').slideUp()
+  $('#range-error-max').slideUp();
+  $inputRangeMin.removeClass('error')
+  $inputRangeMax.removeClass('error')
   $btnUpdateRange.css('align-self', 'flex-end');
 }
 
@@ -313,36 +286,23 @@ function resetGame (e){
 
 function minMaxGuessValidation(e){
   e.preventDefault()
-  if($inputGuessCh1.val() > $maxNumber || $inputGuessCh1.val() < $minNumber) {
-    addGuessErrors()
-  } else if($inputGuessCh1.val() < $minNumber || $inputGuessCh2.val() < $minNumber){
-    addGuessErrors()
+  if($inputGuessCh1.val() > $maxNumber || $inputGuessCh1.val() < $minNumber){
+    $inputGuessCh1.addClass('error');
+    $('#guess-error-1').slideDown();
+  } else if($inputGuessCh2.val() > $maxNumber || $inputGuessCh2.val() < $minNumber){
+    $inputGuessCh2.addClass('error');
+    $('#guess-error-2').slideDown();
   }else{
     removeGuessErrors();
     playGame()
   }
 }
 
-function addGuessErrors(){
-  $inputGuessCh1.addClass('error');
-  $inputGuessCh2.addClass('error');
-  $inputNameCh1.addClass('error');
-  $inputNameCh2.addClass('error');
-  errorGuess1.style.display = 'block';
-  errorGuess2.style.display = 'block';
-  errorName1.style.display = 'block';
-  errorName2.style.display = 'block';
-}
-
 function removeGuessErrors(){
   $inputGuessCh1.removeClass('error');
   $inputGuessCh2.removeClass('error');
-  $inputNameCh1.addClass('error');
-  $inputNameCh2.removeClass('error');
-  errorGuess1.style.display = 'none';
-  errorGuess2.style.display = 'none';
-  errorName1.style.display = 'none';
-  errorName2.style.display = 'none';
+  $('#guess-error-1').slideUp();
+  $('#guess-error-2').slideUp();
 }
 
 
@@ -361,7 +321,6 @@ function displayNames(){
 }
 
 function appendCard(){
-  debugger;
   let newWinner = $(`<section class="card-winner">
       <div class="versus-challenger">
         <p class="card-output-ch1">${$inputNameCh1.val() || `Challenger 1`}</p>
